@@ -1,0 +1,27 @@
+<div fxLayout="row" fxLayoutAlign="center center" class="login-container">
+    <mat-card class="login-card">
+      <mat-card-title fxLayoutAlign="center">Welcome to iMentor</mat-card-title>
+  
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" required />
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password" required />
+        </mat-form-field>
+  
+        <div fxLayout="row" fxLayoutAlign="space-between center" class="form-options">
+          <mat-checkbox formControlName="rememberMe">Remember me</mat-checkbox>
+          <a routerLink="/forgot-password">Forgot password?</a>
+        </div>
+  
+        <button mat-raised-button color="primary" class="full-width" type="submit">
+          Login
+        </button>
+      </form>
+    </mat-card>
+  </div>
+  
