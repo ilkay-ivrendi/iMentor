@@ -1,28 +1,40 @@
 <div fxLayout="column" fxLayoutAlign="center center" class="register-container">
     <mat-card class="register-card">
-        <mat-card-title>Register</mat-card-title>
+        <img src="assets/images/logo.png" alt="Logo">
+        <mat-card-title fxLayoutAlign="center">Register to I-Mentor</mat-card-title>
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutGap="16px">
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="outline">
                 <mat-label>Full Name</mat-label>
                 <input matInput formControlName="fullName" />
+                <mat-icon aria-hidden="false" aria-label="person icon" matSuffix>person</mat-icon>
                 <mat-error *ngIf="f['fullName']?.touched && f['fullName']?.hasError('required')">
                     Full name is required
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
                 <input matInput formControlName="email" />
+                <mat-icon aria-hidden="false" aria-label="mail icon" matSuffix>mail</mat-icon>
                 <mat-error *ngIf="f['email']?.touched && f['email']?.hasError('required')">
                     Email is required
                 </mat-error>
                 <mat-error *ngIf="f['email']?.hasError('email')">Invalid email format</mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="outline">
+                <mat-label>Birth Day</mat-label>
+                <input matInput [matDatepicker]="picker">
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
                 <mat-label>Password</mat-label>
                 <input matInput type="password" formControlName="password" />
+                <mat-icon aria-hidden="false" aria-label="password icon" matSuffix>key</mat-icon>
                 <mat-error *ngIf="f['password']?.touched && f['password']?.hasError('required')">
                     Password is required
                 </mat-error>
@@ -31,9 +43,10 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="outline">
                 <mat-label>Confirm Password</mat-label>
                 <input matInput type="password" formControlName="confirmPassword" />
+                <mat-icon aria-hidden="false" aria-label="password icon" matSuffix>key</mat-icon>
                 <mat-error *ngIf="f['confirmPassword']?.touched && f['confirmPassword']?.hasError('required')">
                     Please confirm your password
                 </mat-error>
