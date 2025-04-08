@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { PlatformService } from '@core/services/platform.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,11 +9,12 @@ export class AuthService {
   private readonly authTokenKey = "auth_token";
   private readonly userRoleKey = "user_role";
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private platform: PlatformService) { }
 
   // Check if the user is Logged in
   get isLoggedIn(): boolean {
-    return !!localStorage.getItem(this.authTokenKey);
+    console.log('Is browser:', this.platform.isBrowser)
+    return this.platform.isBrowser && !!localStorage.getItem(this.authTokenKey);
   }
 
   // Get the user's role (either 'student' or 'teacher')

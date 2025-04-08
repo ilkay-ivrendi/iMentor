@@ -1,21 +1,23 @@
 import { Routes } from '@angular/router';
 import authRoutes from '@core/auth/auth.routes';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { ClassesComponent } from './pages/classes/classes.component';
+import { ShellComponent } from '@shell/shell.component';
+import { authGuard } from '@core/auth/auth.guard';
 
 
 export const appRoutes: Routes = [
+    // authRoutes are public routes
     ...authRoutes,
+
     {
-        path: 'dashboard',
-        component: DashboardComponent,
+        path: '',
+        component: ShellComponent,
+        canActivate: [authGuard],
+        loadChildren: () => import('./shell/shell.routes').then(m => m.default),
     },
-    {
-        path: 'classes',
-        component: ClassesComponent
-    },
+
+    // Fallback
     {
         path: '**',
-        redirectTo: 'login'
-    }
+        redirectTo: 'login',
+    },
 ];
