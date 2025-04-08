@@ -38,6 +38,10 @@ export class LoginComponent {
     });
   }
 
+  get loginFormControls() {
+    return this.loginForm.controls;
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid) {
       const { email, password, rememberMe } = this.loginForm.value;

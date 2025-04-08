@@ -8,12 +8,21 @@
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email" required />
         <mat-icon aria-hidden="false" aria-label="mail icon" matSuffix>mail</mat-icon>
+        <mat-error *ngIf="loginFormControls['email']?.touched && loginFormControls['email']?.hasError('required')">
+          Email is required
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
         <input matInput formControlName="password" type="password" required />
         <mat-icon aria-hidden="false" aria-label="mail icon" matSuffix>key</mat-icon>
+        <mat-error *ngIf="loginFormControls['password']?.touched && loginFormControls['password']?.hasError('required')">
+          Password is required
+        </mat-error>
+        <mat-error *ngIf="loginFormControls['password']?.hasError('minlength')">
+          Minimum 6 characters required
+        </mat-error>
       </mat-form-field>
 
       <div fxLayout="row" fxLayoutAlign="space-between center" class="form-options">

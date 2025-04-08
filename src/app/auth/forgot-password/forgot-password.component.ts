@@ -27,23 +27,24 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
   styleUrl: './forgot-password.component.scss'
 })
 export class ForgotPasswordComponent {
-  form!: FormGroup;
+  forgotPasswordForm!: FormGroup;
 
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar,
     private router: Router) {
-    this.form = this.fb.group({
+
+    this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
   }
 
-  get f() {
-    return this.form.controls;
+  get formControls() {
+    return this.forgotPasswordForm.controls;
   }
 
   onSubmit() {
-    if (this.form.valid) {
-      const email = this.form.value.email;
-      console.log('Reset email sent to:', this.form.value.email);
+    if (this.forgotPasswordForm.valid) {
+      const email = this.forgotPasswordForm.value.email;
+      console.log('Reset email sent to:', this.forgotPasswordForm.value.email);
       // TODO: Trigger password reset email via service
 
       // Simulate sending reset email
