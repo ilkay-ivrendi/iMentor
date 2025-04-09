@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { RouterModule, RouterOutlet } from '@angular/router';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @Component({
   selector: 'app-shell',
@@ -23,6 +24,7 @@ import { RouterModule, RouterOutlet } from '@angular/router';
     MatListModule,
     MatIconModule,
     AsyncPipe,
+    FlexLayoutModule
   ]
 })
 export class ShellComponent {

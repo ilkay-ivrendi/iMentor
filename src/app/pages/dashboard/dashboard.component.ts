@@ -29,18 +29,18 @@ export class DashboardComponent {
     map(({ matches }) => {
       if (matches) {
         return [
-          { title: 'Card 1', cols: 1, rows: 1 },
-          { title: 'Card 2', cols: 1, rows: 1 },
-          { title: 'Card 3', cols: 1, rows: 1 },
-          { title: 'Card 4', cols: 1, rows: 1 }
+          { title: 'Welcome back user', cols: 1, rows: 1 },
+          { title: 'Quick Stats', cols: 1, rows: 1 },
+          { title: 'Lesson Suggestions', cols: 1, rows: 1 },
+          { title: 'Upcoming Schedules', cols: 1, rows: 1 }
         ];
       }
 
       return [
-        { title: 'Card 1', cols: 2, rows: 1 },
-        { title: 'Card 2', cols: 1, rows: 1 },
-        { title: 'Card 3', cols: 1, rows: 2 },
-        { title: 'Card 4', cols: 1, rows: 1 }
+        { title: 'Welcome back user', cols: 2, rows: 1 },
+        { title: 'Quick Stats', cols: 1, rows: 1 },
+        { title: 'Lesson Suggestions', cols: 1, rows: 2 },
+        { title: 'Upcoming Schedules', cols: 1, rows: 1 }
       ];
     })
   );
