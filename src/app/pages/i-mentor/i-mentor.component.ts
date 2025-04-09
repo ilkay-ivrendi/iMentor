@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
-  selector: 'app-classes',
+  selector: 'app-i-mentor',
   imports: [MatCardModule],
-  templateUrl: './classes.component.html',
-  styleUrl: './classes.component.scss'
+  templateUrl: './i-mentor.component.html',
+  styleUrl: './i-mentor.component.scss'
 })
-export class ClassesComponent {
+export class IMentorComponent {
 
 }
