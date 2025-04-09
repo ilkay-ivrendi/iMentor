@@ -9,4 +9,11 @@ export default [
     { path: 'imentor', component: IMentorComponent },
     { path: 'classes', component: ClassesComponent },
     { path: 'classroom', component: ClassroomComponent },
+
+    // Lazy load user module routes under shell
+    {
+        path: '',
+        loadChildren: () =>
+            import('../pages/user/user.routes').then((m) => m.default),
+    },
 ] as Routes;
