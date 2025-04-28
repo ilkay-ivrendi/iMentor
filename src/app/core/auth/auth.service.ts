@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlatformService } from '@core/services/platform.service';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,25 +11,41 @@ export class AuthService {
   private readonly authTokenKey = "auth_token";
   private readonly userRoleKey = "user_role";
 
-  constructor(private router: Router, private platform: PlatformService) { }
+  private apiUrl = 'http://localhost:8080/api/v1/auth';
 
-  // Check if the user is Logged in
+  constructor(private router: Router, private http: HttpClient, private platform: PlatformService) { }
+
   get isLoggedIn(): boolean {
-    console.log('Is browser:', this.platform.isBrowser)
     return this.platform.isBrowser && !!localStorage.getItem(this.authTokenKey);
   }
 
-  // Get the user's role (either 'student' or 'teacher')
-  get userRole(): 'student' | 'teacher' | null {
+  get userRole(): 'USER' | 'STUDENT' | 'TEACHER' | null {
     const role = localStorage.getItem(this.userRoleKey);
-    return role === 'student' || role === 'teacher' ? role : null;
+    return role === 'USER' || role === 'STUDENT' || role === 'TEACHER' ? role : null;
+  }
+  // Call backend API to register user
+  register(userData: any): Observable<any> {
+    console.log("Register request sent", `${this.apiUrl}/register`, userData);
+    return this.http.post(`${this.apiUrl}/register`, userData);
   }
 
-  // Login method (for demonstration purposes)
-  login(token: string, role: 'student' | 'teacher'): void {
-    localStorage.setItem(this.authTokenKey, token);
-    localStorage.setItem(this.userRoleKey, role);
-    this.router.navigate([this.getRedirectUrl(role)]);
+  // Call backend API to login
+  login(credentials: any): Observable<any> {
+    console.log("AuthService", credentials);
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials)
+      .pipe(
+        tap(response => {
+          if (response && response.token) {
+            localStorage.setItem(this.authTokenKey, response.token);
+
+            // You can set role if backend sends it, otherwise default to USER
+            const role = response.role || 'USER';
+            localStorage.setItem(this.userRoleKey, role);
+
+            this.router.navigate([this.getRedirectUrl(role)]);
+          }
+        })
+      );
   }
 
   // Logout method
@@ -38,8 +56,8 @@ export class AuthService {
   }
 
   // Redirect based on user role
-  private getRedirectUrl(role: 'student' | 'teacher'): string {
-    return role === 'student' ? '/dashboard' : '/teacher-dashboard';
+  private getRedirectUrl(role: 'STUDENT' | 'TEACHER'): string {
+    return role === 'STUDENT' ? '/dashboard' : '/teacher-dashboard';
   }
 }
 

@@ -48,13 +48,8 @@ export class LoginComponent {
       const { email, password, rememberMe } = this.loginForm.value;
       // Call AuthService here
       console.log('Logging in with', { email, password, rememberMe });
-
-      // Replace this with actual authentication logic (API call)
-      // For now, mock a successful login:
-      const fakeToken = 'mock-token';
-      const mockRole: 'student' | 'teacher' = 'student'; // You can determine based on email/domain/etc
-
-      this.authService.login(fakeToken, mockRole);
+      const credentials = { email, password }
+      this.authService.login(credentials);
     }
   }
 }

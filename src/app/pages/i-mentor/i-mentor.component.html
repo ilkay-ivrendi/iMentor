@@ -1,10 +1,28 @@
 <div class="grid-container">
     <h1 class="mat-h1">I-Mentor Page</h1>
     <mat-card class="imentor-card">
-      <mat-card-content>
-        Your 3D Mentor is here.
-        <div #canvasContainer class="mentor-container"></div>
-      </mat-card-content>
+        <mat-card-content>
+            <div class="mentor-content" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="16px">
+                <div fxFlex="65" class="mentor-canvas-container">
+                    <canvas #canvas class="mentor-canvas"></canvas>
+                </div>
+
+                <div fxFlex class="chatbox" fxLayout="column">
+                    <h3>Chat with I-Mentor</h3>
+                    <div class="chat-messages">
+                        <!-- Placeholder messages -->
+                        <p><strong>Mentor:</strong> Hi! How can I help you today?</p>
+                    </div>
+
+                    <div class="chat-input" fxLayout="row" fxLayoutAlign="center center">
+                        <input matInput placeholder="Type your question..." class="chat-text" />
+                        <button mat-icon-button color="primary" aria-label="Send message">
+                            <mat-icon>send</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </mat-card-content>
     </mat-card>
-  </div>
-  
+</div>

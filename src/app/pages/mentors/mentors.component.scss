@@ -1,0 +1,23 @@
+.grid-container {
+    margin: 20px;
+}
+
+.mentors-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 20px;
+    gap: 20px;
+}
+
+.mentor-card {
+    width: 450px;
+}
+
+.mat-h1 {
+    margin-left: 20px;
+}
+
+mat-card-actions {
+    margin: 30px;
+}

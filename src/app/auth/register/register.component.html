@@ -1,15 +1,15 @@
-<div fxLayout="column" fxLayoutAlign="center center" class="register-container">
+<div class="register-container">
     <mat-card class="register-card">
         <img src="assets/images/logo.png" alt="Logo">
         <mat-card-title fxLayoutAlign="center">Register to I-Mentor</mat-card-title>
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutGap="16px">
             <mat-form-field appearance="outline">
-                <mat-label>Full Name</mat-label>
-                <input matInput formControlName="fullName" />
+                <mat-label>Username</mat-label>
+                <input matInput formControlName="username" />
                 <mat-icon aria-hidden="false" aria-label="person icon" matSuffix>person</mat-icon>
-                <mat-error *ngIf="f['fullName']?.touched && f['fullName']?.hasError('required')">
-                    Full name is required
+                <mat-error *ngIf="f['username']?.touched && f['username']?.hasError('required')">
+                    Username is required
                 </mat-error>
             </mat-form-field>
 

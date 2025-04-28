@@ -18,16 +18,19 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MatCardModule } from '@angular/material/card';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-i-mentor',
   templateUrl: './i-mentor.component.html',
   styleUrl: './i-mentor.component.scss',
   standalone: true,
-  imports: [MatCardModule]
+  imports: [FlexLayoutModule, MatCardModule, MatButtonModule, MatIconModule]
 })
 export class IMentorComponent implements AfterViewInit {
-  @ViewChild('canvasContainer') canvasRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   private isBrowser: boolean;
 
   private scene!: Scene;
@@ -45,10 +48,16 @@ export class IMentorComponent implements AfterViewInit {
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.isBrowser) {
+      window.removeEventListener('resize', this.onResize.bind(this));
+    }
+  }
+
   private initThreeScene(): void {
     // Scene & Camera
     this.scene = new Scene();
-    this.scene.background = new Color(0x8fbcd4);
+    this.scene.background = new Color('#d65db1');
 
     this.camera = new PerspectiveCamera(
       75,
@@ -57,16 +66,18 @@ export class IMentorComponent implements AfterViewInit {
       0.1,
       1000
     );
-    this.camera.position.set(0, 15, 5);
+    this.camera.position.set(0, 17, 8);
+
+    // Use canvas container dimensions
+    const container = this.canvasRef.nativeElement.parentElement!;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
 
     // Renderer
-    this.renderer = new WebGLRenderer({ antialias: true });
-    this.renderer.setSize(
-      this.canvasRef.nativeElement.clientWidth,
-      this.canvasRef.nativeElement.clientHeight
-    );
+    this.renderer = new WebGLRenderer({ canvas: this.canvasRef.nativeElement, antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.canvasRef.nativeElement.appendChild(this.renderer.domElement);
+    this.renderer.setSize(width, height);
+    this.onResize();
 
     // Lights
     const hemiLight = new HemisphereLight(0xffffff, 0x444444, 1.2);
@@ -79,9 +90,9 @@ export class IMentorComponent implements AfterViewInit {
 
     // Controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.target.set(0, 15, 0);
+    this.controls.target.set(0, 13, 0);
     this.controls.update();
-    
+
 
     // Load GLTF model
     const loader = new GLTFLoader();
@@ -95,11 +106,25 @@ export class IMentorComponent implements AfterViewInit {
 
     // Animate
     this.animate();
+
+    window.addEventListener('resize', () => this.onResize());
   }
 
   private animate(): void {
     requestAnimationFrame(() => this.animate());
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+  }
+
+  private onResize(): void {
+    if (!this.renderer || !this.camera) return;
+  
+    const container = this.canvasRef.nativeElement.parentElement!;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+  
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
   }
 }
