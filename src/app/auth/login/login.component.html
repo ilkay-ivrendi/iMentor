@@ -5,18 +5,18 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" required />
-        <mat-icon aria-hidden="false" aria-label="mail icon" matSuffix>mail</mat-icon>
-        <mat-error *ngIf="loginFormControls['email']?.touched && loginFormControls['email']?.hasError('required')">
-          Email is required
+        <mat-label>Username or Email</mat-label>
+        <input matInput formControlName="identifier" type="text" required />
+        <mat-icon aria-hidden="false" aria-label="mail icon" matSuffix>person</mat-icon>
+        <mat-error *ngIf="loginFormControls['identifier']?.touched && loginFormControls['identifier']?.hasError('required')">
+          Username or Email is required
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
         <input matInput formControlName="password" type="password" required />
-        <mat-icon aria-hidden="false" aria-label="mail icon" matSuffix>key</mat-icon>
+        <mat-icon aria-hidden="false" aria-label="password icon" matSuffix>key</mat-icon>
         <mat-error *ngIf="loginFormControls['password']?.touched && loginFormControls['password']?.hasError('required')">
           Password is required
         </mat-error>

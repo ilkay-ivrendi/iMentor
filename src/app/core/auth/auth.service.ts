@@ -38,7 +38,6 @@ export class AuthService {
           if (response && response.token) {
             localStorage.setItem(this.authTokenKey, response.token);
 
-            // You can set role if backend sends it, otherwise default to USER
             const role = response.role || 'USER';
             localStorage.setItem(this.userRoleKey, role);
 
@@ -56,8 +55,8 @@ export class AuthService {
   }
 
   // Redirect based on user role
-  private getRedirectUrl(role: 'STUDENT' | 'TEACHER'): string {
-    return role === 'STUDENT' ? '/dashboard' : '/teacher-dashboard';
+  private getRedirectUrl(role: 'USER' | 'STUDENT'): string {
+    return role === 'USER' ? '/dashboard' : '/teacher-dashboard';
   }
 }
 

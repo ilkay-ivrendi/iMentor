@@ -33,7 +33,7 @@ export class LoginComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      identifier: ['', [Validators.required]],
       password: ['', Validators.required],
       rememberMe: [false]
     });
@@ -45,11 +45,11 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const { email, password, rememberMe } = this.loginForm.value;
+      const { identifier, password, rememberMe } = this.loginForm.value;
       // Call AuthService here
-      console.log('Logging in with', { email, password, rememberMe });
-      const credentials = { email, password }
-      this.authService.login(credentials);
+      console.log('Logging in with', { identifier, password, rememberMe });
+      const credentials = { identifier, password }
+      this.authService.login(credentials).subscribe();
     }
   }
 }
