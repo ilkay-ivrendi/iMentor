@@ -4,7 +4,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MentorsService } from './mentors.service';
+import { MentorsService } from '@core/services/mentors.service';
 
 @Component({
   selector: 'app-mentors',
@@ -14,9 +14,8 @@ import { MentorsService } from './mentors.service';
 })
 export class MentorsComponent implements OnInit {
   mentors: any = [];
-
-
-
+  currentAudio: HTMLAudioElement | null = null;
+  
   constructor(private mentorsService: MentorsService) { }
 
   ngOnInit(): void {
@@ -24,6 +23,23 @@ export class MentorsComponent implements OnInit {
       next: (data) => this.mentors = data,
       error: (err) => console.error('Error loading mentors:', err)
     });
+  }
+
+  playAudio(audioUrl: string): void {
+    if (!audioUrl) return;
+  
+    this.stopAudio(); // Stop any existing audio
+  
+    this.currentAudio = new Audio(audioUrl);
+    this.currentAudio.play().catch((err) => console.error("Audio play error:", err));
+  }
+  
+  stopAudio(): void {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio.currentTime = 0;
+      this.currentAudio = null;
+    }
   }
 
 }

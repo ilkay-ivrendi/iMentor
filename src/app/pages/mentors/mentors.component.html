@@ -14,7 +14,7 @@
               </ul>
             </mat-card-content>
             <mat-card-actions fxLayoutAlign="center">
-              <button mat-fab extended color="primary"> <mat-icon>graphic_eq</mat-icon> Start Chat</button>
+              <button mat-fab extended color="primary" (mouseenter)="playAudio(mentor.voiceIntroUrl)" (mouseleave)="stopAudio()"> <mat-icon>graphic_eq</mat-icon> Start Chat</button>
             </mat-card-actions>
           </mat-card>
     </div>
