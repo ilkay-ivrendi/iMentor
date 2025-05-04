@@ -1,22 +1,36 @@
 <div class="grid-container">
-    <h1 class="mat-h1">I-Mentor Page</h1>
+    <h1 class="mat-h1">You are chatting with {{mentor?.name}}</h1>
     <mat-card class="imentor-card">
         <mat-card-content>
-            <div class="mentor-content" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="16px">
-                <div fxFlex="65" class="mentor-canvas-container">
+            <div class="mentor-content" fxLayout="row" fxLayoutGap="20px">
+                <div fxFlex="50" class="mentor-canvas-container">
                     <canvas #canvas class="mentor-canvas"></canvas>
                 </div>
 
-                <div fxFlex class="chatbox" fxLayout="column">
-                    <h3>Chat with I-Mentor</h3>
+                <div fxFlex="50" class="chatbox">
                     <div class="chat-messages">
                         <!-- Placeholder messages -->
-                        <p><strong>Mentor:</strong> Hi! How can I help you today?</p>
+                        <div class="chat-message" *ngFor="let message of messages">
+                            <div class="message-wrapper"
+                                [ngClass]="{'message-user': message.sender === 'user', 'message-assistant': message.sender === 'assistant'}">
+                                <div class="avatar">
+                                    <img *ngIf="message.sender === 'user'" src="https://robohash.org/VZG.png?set=set4"
+                                        alt="User Avatar" />
+                                    <img *ngIf="message.sender === 'assistant'" src="{{mentor?.mentorAvatar}}"
+                                        alt="Assistant Avatar" />
+                                </div>
+                                <div class="message-content">
+                                    <p>{{message.content}}</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="chat-input" fxLayout="row" fxLayoutAlign="center center">
-                        <input matInput placeholder="Type your question..." class="chat-text" />
-                        <button mat-icon-button color="primary" aria-label="Send message">
+                        <input matInput placeholder="Type your question..." class="chat-text"
+                            [formControl]="messageInput" />
+                        <button mat-icon-button color="primary" aria-label="Send message" (click)="sendMessage()">
                             <mat-icon>send</mat-icon>
                         </button>
                     </div>

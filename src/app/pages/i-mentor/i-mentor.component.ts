@@ -4,9 +4,10 @@ import {
   Inject,
   PLATFORM_ID,
   ViewChild,
-  AfterViewInit
+  AfterViewInit,
+  OnInit
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   Scene,
   PerspectiveCamera,
@@ -21,15 +22,20 @@ import { MatCardModule } from '@angular/material/card';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { ChatService } from '@core/services/chat.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl } from '@angular/forms';
+import { MentorsService } from '@core/services/mentors.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-i-mentor',
   templateUrl: './i-mentor.component.html',
   styleUrl: './i-mentor.component.scss',
   standalone: true,
-  imports: [FlexLayoutModule, MatCardModule, MatButtonModule, MatIconModule]
+  imports: [CommonModule, ReactiveFormsModule, FlexLayoutModule, MatCardModule, MatButtonModule, MatIconModule]
 })
-export class IMentorComponent implements AfterViewInit {
+export class IMentorComponent implements OnInit, AfterViewInit {
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   private isBrowser: boolean;
 
@@ -38,14 +44,66 @@ export class IMentorComponent implements AfterViewInit {
   private renderer!: WebGLRenderer;
   private controls!: OrbitControls;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {
+  mentor: any;
+
+  messageInput = new FormControl('');
+
+  messages: any = [
+    {
+      sender: "assistant",
+      content: "Hi! How can I help you today?"
+    },
+    {
+      sender: "user",
+      content: "What is your first name?"
+    },
+    {
+      sender: "assistant",
+      content: "Hi! How can I help you today?"
+    },
+    {
+      sender: "user",
+      content: "What is your first name?"
+    }
+  ];
+
+  constructor(@Inject(PLATFORM_ID) private platformId: object, private chatService: ChatService, private mentorsService: MentorsService, private router: Router) {
     this.isBrowser = isPlatformBrowser(this.platformId);
+  }
+
+  ngOnInit() {
+    this.mentorsService.mentor$.subscribe({
+      next: (data) => this.mentor = data,
+      error: (err) => console.error('Error loading mentor:', err)
+    });
+
+    if (!this.mentor) {
+      this.mentor = {
+        id: 46,
+        name: "Ms Aurel",
+        branch: "Mathematics",
+        description: "An friendly mentor passionate about helping students understand complex concepts easily.",
+        systemPrompt: "You are a brilliant and friendly mentor. Your name is Aurel. Explain problems clearly, encourage critical thinking, and guide learners through examples. Your answers are maximum 3 sentence",
+        lessons: [
+          "Algebra Basics",
+          "Geometry Essentials",
+          "Introduction to Calculus",
+          "Probability and Statistics",
+          "Problem-Solving Strategies"
+        ],
+        mentorAvatar: "http://localhost:8080/images/mentor-avatars/Dr._Alan_Carter.png",
+        voiceIntroUrl: "http://localhost:8080/audio/mentor-intros/Dr._Alan_Carter.wav",
+        voiceId: "p225"
+      }
+    }
+
   }
 
   ngAfterViewInit(): void {
     if (this.isBrowser) {
       this.initThreeScene();
     }
+
   }
 
   ngOnDestroy(): void {
@@ -118,13 +176,39 @@ export class IMentorComponent implements AfterViewInit {
 
   private onResize(): void {
     if (!this.renderer || !this.camera) return;
-  
+
     const container = this.canvasRef.nativeElement.parentElement!;
     const width = container.clientWidth;
     const height = container.clientHeight;
-  
+
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
   }
+
+  sendMessage() {
+    const message = this.messageInput.value;
+
+    if (!message || !message.trim()) {
+      return; // Avoid sending empty message
+    }
+
+    this.messages.push({ sender: 'user', content: message });
+
+    // Simulate assistant's reply
+    setTimeout(() => {
+      this.messages.push({ sender: 'assistant', content: 'This is a response from the assistant.' });
+    }, 1000); // Simulate delay
+
+    this.messageInput.setValue(''); // Clear the input field after sending
+
+    // Uncomment and call the actual service method for sending the message
+    // this.chatService.sendMessage(mockChatMessage).subscribe({
+    //   next: (data) => this.messages = data,
+    //   error: (err) => console.error('Error sending message:', err)
+    // });
+
+  }
+
+
 }

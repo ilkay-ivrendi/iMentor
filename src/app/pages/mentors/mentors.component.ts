@@ -4,19 +4,20 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { Router, RouterModule } from '@angular/router';
 import { MentorsService } from '@core/services/mentors.service';
 
 @Component({
   selector: 'app-mentors',
-  imports: [CommonModule, FlexLayoutModule, MatCardModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, RouterModule, FlexLayoutModule, MatCardModule, MatButtonModule, MatIconModule],
   templateUrl: './mentors.component.html',
   styleUrl: './mentors.component.scss'
 })
 export class MentorsComponent implements OnInit {
   mentors: any = [];
   currentAudio: HTMLAudioElement | null = null;
-  
-  constructor(private mentorsService: MentorsService) { }
+
+  constructor(private mentorsService: MentorsService, private router: Router) { }
 
   ngOnInit(): void {
     this.mentorsService.getMentors().subscribe({
@@ -27,13 +28,13 @@ export class MentorsComponent implements OnInit {
 
   playAudio(audioUrl: string): void {
     if (!audioUrl) return;
-  
+
     this.stopAudio(); // Stop any existing audio
-  
+
     this.currentAudio = new Audio(audioUrl);
     this.currentAudio.play().catch((err) => console.error("Audio play error:", err));
   }
-  
+
   stopAudio(): void {
     if (this.currentAudio) {
       this.currentAudio.pause();
@@ -42,4 +43,9 @@ export class MentorsComponent implements OnInit {
     }
   }
 
+  chatWithMentor(mentor: any) {
+    this.mentorsService.setMentor(mentor);
+    this.stopAudio();
+    this.router.navigate(['/imentor']);
+  }
 }

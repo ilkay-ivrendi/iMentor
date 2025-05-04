@@ -1,21 +1,25 @@
 <div class="grid-container">
-    <h1 class="mat-h1">Available Mentors</h1>
-    <div class="mentors-container" fxLayout="row">
+  <h1 class="mat-h1">Available Mentors</h1>
+  <div class="mentors-container" fxLayout="row">
 
-        <mat-card class="mentor-card" appearance="raised" *ngFor="let mentor of mentors">
-            <mat-card-header>
-              <mat-card-title>{{ mentor.name }}</mat-card-title>
-              <mat-card-subtitle>{{ mentor.description }}</mat-card-subtitle>
-            </mat-card-header>
-            <img mat-card-image [src]="mentor.mentorAvatar" alt="{{ mentor.name }} Avatar">
-            <mat-card-content>
-              <ul>
-                <li *ngFor="let lesson of mentor.lessons">{{ lesson }}</li>
-              </ul>
-            </mat-card-content>
-            <mat-card-actions fxLayoutAlign="center">
-              <button mat-fab extended color="primary" (mouseenter)="playAudio(mentor.voiceIntroUrl)" (mouseleave)="stopAudio()"> <mat-icon>graphic_eq</mat-icon> Start Chat</button>
-            </mat-card-actions>
-          </mat-card>
-    </div>
+    <mat-card class="mentor-card" appearance="raised" *ngFor="let mentor of mentors">
+      <mat-card-header>
+        <mat-card-title>{{ mentor.name }}</mat-card-title>
+        <mat-card-subtitle>{{ mentor.description }}</mat-card-subtitle>
+      </mat-card-header>
+      <img mat-card-image [src]="mentor.mentorAvatar" alt="{{ mentor.name }} Avatar">
+      <mat-card-content>
+        <ul>
+          <li *ngFor="let lesson of mentor.lessons">{{ lesson }}</li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions fxLayoutAlign="center">
+        <button mat-fab extended color="primary" 
+          (mouseenter)="playAudio(mentor?.voiceIntroUrl)"
+          (mouseleave)="stopAudio()"
+          (click)="chatWithMentor(mentor)"
+         > <mat-icon>graphic_eq</mat-icon> Start Chat</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </div>
