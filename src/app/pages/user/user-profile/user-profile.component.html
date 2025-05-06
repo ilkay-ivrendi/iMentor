@@ -1,9 +1,44 @@
-<div class="grid-container">
-    <h1 class="mat-h1">User Profile</h1>
-    <mat-card class="user-profile-card">
+<div class="profile-container" fxLayout="column" fxLayoutAlign="start center">
+    <div class="cover-photo">
+        <img src="../assets/images/coverphoto.jpg" alt="Cover" class="cover-img" />
+    </div>
+
+    <div class="profile-header" fxLayout="row" fxLayoutAlign="start center">
+        <img src="../assets/images/coverphoto.jpg" alt="Profile" class="profile-img" />
+        <div class="user-info">
+            <h2 class="mat-h2">John Doe</h2>
+            <p class="mat-subheading-1">Software Engineer at Example Corp</p>
+            <p class="mat-body-2">Lives in San Francisco · From New York</p>
+        </div>
+        <div class="actions" fxFlex fxLayoutAlign="end center">
+            <button mat-raised-button color="primary">Edit Profile</button>
+            <button mat-stroked-button (click)="logout()">Logout</button>
+        </div>
+    </div>
+
+    <mat-card class="about-section">
+        <mat-card-header>
+            <mat-card-title>
+                <div class="title-with-icon">
+                    <mat-icon color="primary">info</mat-icon>
+                    <span>About Me</span>
+                </div>
+            </mat-card-title>
+        </mat-card-header>
         <mat-card-content>
-           Your Profile is here!
-           <button mat-button (click)="logout()">logout</button>
+            <p>Passionate frontend developer with a love for building interactive web experiences. Always exploring new
+                technologies and currently diving deep into 3D web with Three.js. Coffee enthusiast ☕ and lifelong
+                learner.</p>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="post" *ngFor="let post of userPosts">
+        <mat-card-header>
+            <mat-card-title>{{ post.title }}</mat-card-title>
+            <mat-card-subtitle>{{ post.date }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <p>{{ post.content }}</p>
         </mat-card-content>
     </mat-card>
 </div>

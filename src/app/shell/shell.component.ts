@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { UserMenuComponent } from "../pages/user/user-menu/user-menu.component";
 
 @Component({
   selector: 'app-shell',
@@ -24,8 +25,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatListModule,
     MatIconModule,
     AsyncPipe,
-    FlexLayoutModule
-  ]
+    FlexLayoutModule,
+    UserMenuComponent
+]
 })
 export class ShellComponent {
   private breakpointObserver = inject(BreakpointObserver);
