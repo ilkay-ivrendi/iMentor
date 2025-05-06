@@ -2,25 +2,57 @@
   <h1 class="mat-h1">Dashboard</h1>
   <mat-grid-list cols="2" rowHeight="350px">
     @for (card of cards | async; track card) {
-      <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
-        <mat-card class="dashboard-card">
-          <mat-card-header>
-            <mat-card-title>
-              {{card.title}}
-              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu" xPosition="before">
-                <button mat-menu-item>Expand</button>
-                <button mat-menu-item>Remove</button>
-              </mat-menu>
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="dashboard-card-content">
-            <div>Card Content Here...</div>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
+    <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            {{card.title}}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div *ngIf="card.id === 1" class="stats">
+            <app-user-strengths-chart></app-user-strengths-chart>
+          </div>
+
+          <div *ngIf="card.id === 2" class="quick-stats">
+            <mat-list>
+              @for (stat of quickStats; track stat) {
+              <mat-list-item class="stat-card">
+                <mat-icon matListItemIcon color="primary">{{ stat.icon }}</mat-icon>
+                <mat-card-title></mat-card-title>
+                <div matListItemTitle>{{ stat.label }} : {{ stat.value }}</div>
+              </mat-list-item>
+              }
+            </mat-list>
+          </div>
+
+          <div *ngIf="card.id === 3" class="lesson-list">
+            <mat-list>
+              @for (lesson of lessonSuggestions; track lesson) {
+              <mat-list-item>
+                <mat-icon matListItemIcon>school</mat-icon>
+                <div matListItemTitle><strong>{{lesson.lesson}}</strong></div>
+                <div matListItemLine>{{lesson.area}} | {{lesson.mentor}}</div>
+              </mat-list-item>
+              }
+            </mat-list>
+          </div>
+
+          <div *ngIf="card.id === 4" class="upcoming-schedules">
+            <mat-list>
+              @for (item of upcomingSchedules; track item) {
+              <mat-list-item>
+                <mat-icon matListItemIcon>school</mat-icon>
+                <div matListItemTitle><strong>{{ item.title }}</strong></div>
+                <div matListItemLine>{{ item.date }} at {{ item.time }} — {{ item.location }}</div>
+              </mat-list-item>
+              }
+            </mat-list>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
     }
   </mat-grid-list>
 </div>

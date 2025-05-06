@@ -23,3 +23,34 @@
 .mat-h1 {
   margin-left: 20px;
 }
+
+.quick-stats {
+  display: block;
+  text-align: left;
+  overflow: auto;
+  height: 600px;
+}
+
+.lesson-list {
+  display: block;
+  text-align: left;
+  overflow: auto;
+  height: 600px;
+
+  mat-list-item:hover {
+    background-color: lightgrey;
+    cursor: pointer;
+  }
+}
+
+.upcoming-schedules {
+  display: block;
+  text-align: left;
+  overflow: auto;
+  height: 250px;
+
+  mat-list-item:hover {
+    background-color: lightgray;
+    cursor: pointer;
+  }
+}
