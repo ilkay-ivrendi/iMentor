@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '@core/auth/auth.service';
+import { User, UserService } from '@core/services/user.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
@@ -12,6 +14,8 @@ import { AuthService } from '@core/auth/auth.service';
   styleUrl: './user-profile.component.scss'
 })
 export class UserProfileComponent {
+
+  user$: Observable <User | null>;
 
   userPosts = [
     {
@@ -32,7 +36,9 @@ export class UserProfileComponent {
   ];
   
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private userService: UserService) { 
+    this.user$ = this.userService.user$;
+  }
 
   logout() {
     this.authService.logout();

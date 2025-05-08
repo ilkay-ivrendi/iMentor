@@ -11,6 +11,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { UserMenuComponent } from "../pages/user/user-menu/user-menu.component";
+import { User, UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-shell',
@@ -32,9 +33,19 @@ import { UserMenuComponent } from "../pages/user/user-menu/user-menu.component";
 export class ShellComponent {
   private breakpointObserver = inject(BreakpointObserver);
 
+  user$: Observable<User | null>;
+
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
       shareReplay()
     );
+
+    constructor(private userService: UserService) {
+      this.user$ = this.userService.user$
+    }
+
+    ngOnInit() {
+
+    }
 }

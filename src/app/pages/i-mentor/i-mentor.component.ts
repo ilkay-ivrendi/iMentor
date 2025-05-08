@@ -7,7 +7,7 @@ import {
   AfterViewInit,
   OnInit
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { AsyncPipe, CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   Scene,
   PerspectiveCamera,
@@ -22,18 +22,21 @@ import { MatCardModule } from '@angular/material/card';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ChatService } from '@core/services/chat.service';
+import { ChatMessage, ChatService } from '@core/services/chat.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormControl } from '@angular/forms';
 import { MentorsService } from '@core/services/mentors.service';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { TTSService } from '@core/services/tts.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-i-mentor',
   templateUrl: './i-mentor.component.html',
   styleUrl: './i-mentor.component.scss',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FlexLayoutModule, MatCardModule, MatButtonModule, MatIconModule]
+  imports: [AsyncPipe, CommonModule, ReactiveFormsModule, FlexLayoutModule, MatCardModule, MatButtonModule, MatIconModule]
 })
 export class IMentorComponent implements OnInit, AfterViewInit {
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -48,28 +51,21 @@ export class IMentorComponent implements OnInit, AfterViewInit {
 
   messageInput = new FormControl('');
 
-  messages: any = [
-    {
-      sender: "assistant",
-      content: "Hi! How can I help you today?"
-    },
-    {
-      sender: "user",
-      content: "What is your first name?"
-    },
-    {
-      sender: "assistant",
-      content: "Hi! How can I help you today?"
-    },
-    {
-      sender: "user",
-      content: "What is your first name?"
-    }
-  ];
+  messages$: Observable<any[]>;
+  private messagesSubject = new BehaviorSubject<any[]>([
+    { sender: 'user', content: 'Hello there!' },
+    { sender: 'assistant', content: 'Hi! How can I help you today?' }
+  ]);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: object, private chatService: ChatService, private mentorsService: MentorsService, private router: Router) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-  }
+  constructor(@Inject(PLATFORM_ID) private platformId: object,
+    private chatService: ChatService,
+    private mentorsService: MentorsService,
+    private ttsService: TTSService,
+    private router: Router)
+    {
+      this.isBrowser = isPlatformBrowser(this.platformId);
+      this.messages$ = this.messagesSubject.asObservable();
+    }
 
   ngOnInit() {
     this.mentorsService.mentor$.subscribe({
@@ -193,20 +189,52 @@ export class IMentorComponent implements OnInit, AfterViewInit {
       return; // Avoid sending empty message
     }
 
-    this.messages.push({ sender: 'user', content: message });
-
+    // this.messages.push({ sender: 'user', content: message });
+    const currentMessages = this.messagesSubject.getValue();
+    const newMessage: any = { sender: "user", content: message };
+    this.messagesSubject.next([...currentMessages, newMessage]);
     // Simulate assistant's reply
     setTimeout(() => {
-      this.messages.push({ sender: 'assistant', content: 'This is a response from the assistant.' });
+      // this.messages.push({ sender: 'assistant', content: 'This is a response from the assistant.' });
+      const currentMessages = this.messagesSubject.getValue();
+      const newMessage: any = { sender: 'assistant', content: 'This is a response from the assistant.' };
+      this.messagesSubject.next([...currentMessages, newMessage]);
     }, 1000); // Simulate delay
 
     this.messageInput.setValue(''); // Clear the input field after sending
 
+    console.log("Mentor:", this.mentor);
+
+    const chatMessage: ChatMessage = {
+      userId: "680fe1a1ca2c6629ae5cae5d",
+      mentorId: "680fc52af32f097904bed417",
+      message: message,
+      sessionId: "123123123123",
+      stream: false,
+    }
+
+    const ttsData = {
+      voice_id: "p263",
+      mentor_id: "mentor_alice",
+      text: "Hello, I am Mentor Alen. Welcome to our session."
+    }
+
     // Uncomment and call the actual service method for sending the message
-    // this.chatService.sendMessage(mockChatMessage).subscribe({
-    //   next: (data) => this.messages = data,
-    //   error: (err) => console.error('Error sending message:', err)
-    // });
+    this.chatService.sendMessage(chatMessage).subscribe({
+      next: (data) => {
+        console.log("Message Data:", data);
+        const newMessage: any = { sender: data.message.role, content: data.message.content };
+        ttsData.text = data.message.content;
+
+        this.ttsService.generateTTS(ttsData).subscribe({
+          next: (data) => console.log("generated audio", data),
+          error: (err) => console.log(err)
+        });
+
+        this.messagesSubject.next([...currentMessages, newMessage]);
+      },
+      error: (err) => console.error('Error sending message:', err)
+    });
 
   }
 

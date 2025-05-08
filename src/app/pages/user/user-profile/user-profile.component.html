@@ -6,7 +6,7 @@
     <div class="profile-header" fxLayout="row" fxLayoutAlign="start center">
         <img src="../assets/images/coverphoto.jpg" alt="Profile" class="profile-img" />
         <div class="user-info">
-            <h2 class="mat-h2">John Doe</h2>
+            <h2 class="mat-h2"> {{(user$ | async)?.username }} </h2>
             <p class="mat-subheading-1">Software Engineer at Example Corp</p>
             <p class="mat-body-2">Lives in San Francisco · From New York</p>
         </div>

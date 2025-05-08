@@ -10,7 +10,8 @@
                 <div fxFlex="50" class="chatbox">
                     <div class="chat-messages">
                         <!-- Placeholder messages -->
-                        <div class="chat-message" *ngFor="let message of messages">
+                        <div class="chat-message">
+                            @for (message of messages$ | async; track message) {
                             <div class="message-wrapper"
                                 [ngClass]="{'message-user': message.sender === 'user', 'message-assistant': message.sender === 'assistant'}">
                                 <div class="avatar">
@@ -23,6 +24,7 @@
                                     <p>{{message.content}}</p>
                                 </div>
                             </div>
+                            }
                         </div>
 
                     </div>

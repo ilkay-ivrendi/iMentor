@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlatformService } from '@core/services/platform.service';
+import { UserService } from '@core/services/user.service';
 import { Observable, tap } from 'rxjs';
 
 @Injectable({
@@ -13,7 +14,7 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:8080/api/v1/auth';
 
-  constructor(private router: Router, private http: HttpClient, private platform: PlatformService) { }
+  constructor(private router: Router, private http: HttpClient, private platform: PlatformService, private userService: UserService) { }
 
   get isLoggedIn(): boolean {
     return this.platform.isBrowser && !!localStorage.getItem(this.authTokenKey);
@@ -37,10 +38,9 @@ export class AuthService {
         tap(response => {
           if (response && response.token) {
             localStorage.setItem(this.authTokenKey, response.token);
+            this.userService.setUser(response);
 
             const role = response.role || 'USER';
-            localStorage.setItem(this.userRoleKey, role);
-
             this.router.navigate([this.getRedirectUrl(role)]);
           }
         })
