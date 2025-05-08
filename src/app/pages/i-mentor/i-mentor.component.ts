@@ -14,7 +14,11 @@ import {
   WebGLRenderer,
   DirectionalLight,
   HemisphereLight,
-  Color
+  Color,
+  CubeTextureLoader,
+  BoxGeometry,
+  MeshBasicMaterial,
+  Mesh
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -146,6 +150,23 @@ export class IMentorComponent implements OnInit, AfterViewInit {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0, 13, 0);
     this.controls.update();
+
+    const textureloader = new CubeTextureLoader();
+    const texture = textureloader.load([
+      '../assets/images/Skybox_8/Left_Tex.png', // Left
+      '../assets/images/Skybox_8/Right_Tex.png', // Right
+      '../assets/images/Skybox_8/Up_Tex.png', // Top
+      '../assets/images/Skybox_8/Down_Tex.png', // Bottom
+      '../assets/images/Skybox_8/Front_Tex.png', // Front
+      '../assets/images/Skybox_8/Back_Tex.png', // Back
+    ]);
+    this.scene.background = texture;
+
+    // Add a sample cube for reference
+    const geometry = new BoxGeometry(100, 100, 100);
+    const material = new MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new Mesh(geometry, material);
+    this.scene.add(cube);
 
 
     // Load GLTF model
