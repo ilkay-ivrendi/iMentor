@@ -61,15 +61,17 @@ export class IMentorComponent implements OnInit, AfterViewInit {
     { sender: 'assistant', content: 'Hi! How can I help you today?' }
   ]);
 
+  audioUrl: string = '';
+  audio = new Audio();
+
   constructor(@Inject(PLATFORM_ID) private platformId: object,
     private chatService: ChatService,
     private mentorsService: MentorsService,
     private ttsService: TTSService,
-    private router: Router)
-    {
-      this.isBrowser = isPlatformBrowser(this.platformId);
-      this.messages$ = this.messagesSubject.asObservable();
-    }
+    private router: Router) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    this.messages$ = this.messagesSubject.asObservable();
+  }
 
   ngOnInit() {
     this.mentorsService.mentor$.subscribe({
@@ -207,24 +209,13 @@ export class IMentorComponent implements OnInit, AfterViewInit {
     const message = this.messageInput.value;
 
     if (!message || !message.trim()) {
-      return; // Avoid sending empty message
+      return;
     }
 
-    // this.messages.push({ sender: 'user', content: message });
     const currentMessages = this.messagesSubject.getValue();
-    const newMessage: any = { sender: "user", content: message };
-    this.messagesSubject.next([...currentMessages, newMessage]);
-    // Simulate assistant's reply
-    setTimeout(() => {
-      // this.messages.push({ sender: 'assistant', content: 'This is a response from the assistant.' });
-      const currentMessages = this.messagesSubject.getValue();
-      const newMessage: any = { sender: 'assistant', content: 'This is a response from the assistant.' };
-      this.messagesSubject.next([...currentMessages, newMessage]);
-    }, 1000); // Simulate delay
-
-    this.messageInput.setValue(''); // Clear the input field after sending
-
-    console.log("Mentor:", this.mentor);
+    const userMessage: any = { sender: "user", content: message };
+    this.messagesSubject.next([...currentMessages, userMessage]);
+    this.messageInput.setValue('');
 
     const chatMessage: ChatMessage = {
       userId: "680fe1a1ca2c6629ae5cae5d",
@@ -232,32 +223,48 @@ export class IMentorComponent implements OnInit, AfterViewInit {
       message: message,
       sessionId: "123123123123",
       stream: false,
-    }
+    };
 
     const ttsData = {
       voice_id: "p263",
       mentor_id: "mentor_alice",
-      text: "Hello, I am Mentor Alen. Welcome to our session."
-    }
+      text: message
+    };
 
-    // Uncomment and call the actual service method for sending the message
     this.chatService.sendMessage(chatMessage).subscribe({
-      next: (data) => {
-        console.log("Message Data:", data);
-        const newMessage: any = { sender: data.message.role, content: data.message.content };
-        ttsData.text = data.message.content;
+      next: (response) => {
+        const assistantMessage: any = {
+          sender: response.message.role,
+          content: response.message.content
+        };
+        this.messagesSubject.next([...this.messagesSubject.getValue(), assistantMessage]);
+        ttsData.text = response.message.content;
 
         this.ttsService.generateTTS(ttsData).subscribe({
-          next: (data) => console.log("generated audio", data),
-          error: (err) => console.log(err)
+          next: (ttsResponse) => {
+            console.log("generated audio", ttsResponse);
+            this.audioUrl = ttsResponse.audioPath;
+            console.log("Received Audio URL: ", this.audioUrl);
+            this.playAudio();
+          },
+          error: (err) => console.error("TTS Generation Error:", err)
         });
-
-        this.messagesSubject.next([...currentMessages, newMessage]);
       },
       error: (err) => console.error('Error sending message:', err)
     });
-
   }
 
+  playAudio() {
+    if (!this.audioUrl) {
+      console.error('Audio URL is not set.');
+      return;
+    }
+
+    this.audio.src = this.audioUrl;
+    this.audio.load();
+    this.audio.play().catch((error) => {
+      console.error('Audio playback error:', error);
+    });
+  }
 
 }

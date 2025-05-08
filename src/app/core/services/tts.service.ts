@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface ttsData {
+    audioPath: string,
+    message: string,
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -10,7 +15,7 @@ export class TTSService {
 
     constructor(private http: HttpClient) { }
 
-    generateTTS(body: any): Observable<any[]> {
-        return this.http.post<any[]>(this.apiUrl + "/synthesize", body); // Add model later
+    generateTTS(body: any): Observable<ttsData> {
+        return this.http.post<ttsData>(this.apiUrl + "/synthesize", body); // Add model later
     }
 }
