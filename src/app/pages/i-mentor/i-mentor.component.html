@@ -8,7 +8,7 @@
                 </div>
 
                 <div fxFlex="50" class="chatbox">
-                    <div class="chat-messages">
+                    <div class="chat-messages" #chatMessageContainer>
                         <!-- Placeholder messages -->
                         <div class="chat-message">
                             @for (message of messages$ | async; track message) {
@@ -21,7 +21,23 @@
                                         alt="Assistant Avatar" />
                                 </div>
                                 <div class="message-content">
+                                    <h4>
+                                        <span *ngIf="message.sender === 'assistant'">
+                                            <strong>{{mentor.name}}</strong>
+                                        </span>
+                                    </h4>
                                     <p>{{message.content}}</p>
+
+                                    <div class="message-details" fxLayoutAlign="end center">
+                                        <small>{{message.created_at | date: 'HH:mm'}}</small>
+                                        <span fxFlex></span>
+                                        <button *ngIf="message.sender === 'assistant'" mat-icon-button
+                                            (click)="toggleAudio(message)">
+                                            <mat-icon>
+                                                {{ message.isPlaying ? 'pause_circle' : 'play_circle' }}
+                                            </mat-icon>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             }
@@ -31,13 +47,12 @@
 
                     <div class="chat-input" fxLayout="row" fxLayoutAlign="center center">
                         <input matInput placeholder="Type your question..." class="chat-text"
-                            [formControl]="messageInput" />
+                            [formControl]="messageInput" (keydown.enter)="sendMessage()" />
                         <button mat-icon-button color="primary" aria-label="Send message" (click)="sendMessage()">
                             <mat-icon>send</mat-icon>
                         </button>
                     </div>
                 </div>
-
             </div>
         </mat-card-content>
     </mat-card>

@@ -5,7 +5,8 @@ import {
   PLATFORM_ID,
   ViewChild,
   AfterViewInit,
-  OnInit
+  OnInit,
+  ChangeDetectorRef
 } from '@angular/core';
 import { AsyncPipe, CommonModule, isPlatformBrowser } from '@angular/common';
 import {
@@ -44,6 +45,7 @@ import { error } from 'console';
 })
 export class IMentorComponent implements OnInit, AfterViewInit {
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chatMessageContainer') private messageContainer!: ElementRef;
   private isBrowser: boolean;
 
   private scene!: Scene;
@@ -57,20 +59,24 @@ export class IMentorComponent implements OnInit, AfterViewInit {
 
   messages$: Observable<any[]>;
   private messagesSubject = new BehaviorSubject<any[]>([
-    { sender: 'user', content: 'Hello there!' },
-    { sender: 'assistant', content: 'Hi! How can I help you today?' }
+    { sender: 'user', content: 'Hello there!', audioPath: "", isPlaying: false },
+    { sender: 'assistant', content: 'Hi! How can I help you today?', audioPath: "", isPlaying: false }
   ]);
 
   audioUrl: string = '';
-  audio = new Audio();
+  audio!: HTMLAudioElement;
 
   constructor(@Inject(PLATFORM_ID) private platformId: object,
     private chatService: ChatService,
     private mentorsService: MentorsService,
     private ttsService: TTSService,
-    private router: Router) {
+    private router: Router,
+    private cdRef: ChangeDetectorRef) {
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.messages$ = this.messagesSubject.asObservable();
+    if (this.isBrowser) {
+      this.audio = new Audio();
+    }
   }
 
   ngOnInit() {
@@ -216,6 +222,7 @@ export class IMentorComponent implements OnInit, AfterViewInit {
     const userMessage: any = { sender: "user", content: message };
     this.messagesSubject.next([...currentMessages, userMessage]);
     this.messageInput.setValue('');
+    this.scrollToBottom();
 
     const chatMessage: ChatMessage = {
       userId: "680fe1a1ca2c6629ae5cae5d",
@@ -235,36 +242,102 @@ export class IMentorComponent implements OnInit, AfterViewInit {
       next: (response) => {
         const assistantMessage: any = {
           sender: response.message.role,
-          content: response.message.content
+          content: response.message.content,
+          audioPath: "",
+          isPlaying: false,
+          created_at: response.created_at
         };
-        this.messagesSubject.next([...this.messagesSubject.getValue(), assistantMessage]);
-        ttsData.text = response.message.content;
 
+        console.log("response:", response)
+
+        ttsData.text = response.message.content;
         this.ttsService.generateTTS(ttsData).subscribe({
           next: (ttsResponse) => {
             console.log("generated audio", ttsResponse);
             this.audioUrl = ttsResponse.audioPath;
+            assistantMessage.audioPath = this.audioUrl;
             console.log("Received Audio URL: ", this.audioUrl);
-            this.playAudio();
+
+            // Now we play the audio and set isPlaying
+            this.playAudio(assistantMessage);
+
           },
           error: (err) => console.error("TTS Generation Error:", err)
         });
+
+        this.messagesSubject.next([...this.messagesSubject.getValue(), assistantMessage]);
+        this.scrollToBottom();
+
       },
       error: (err) => console.error('Error sending message:', err)
     });
   }
 
-  playAudio() {
-    if (!this.audioUrl) {
+  playAudio(assistantMessage: any) {
+    if (!assistantMessage.audioPath) {
       console.error('Audio URL is not set.');
       return;
     }
 
-    this.audio.src = this.audioUrl;
+    // Stop any currently playing audio
+    if (!this.audio.paused && this.audio.src !== assistantMessage.audioPath) {
+      this.audio.pause();
+      this.messagesSubject.getValue().forEach((msg) => msg.isPlaying = false);
+    }
+
+    // Set the new audio source and play it
+    this.audio.src = assistantMessage.audioPath;
     this.audio.load();
-    this.audio.play().catch((error) => {
-      console.error('Audio playback error:', error);
-    });
+    this.audio.play()
+      .then(() => {
+        assistantMessage.isPlaying = true;
+        this.updateMessageState(assistantMessage);
+      })
+      .catch((error) => {
+        console.error('Audio playback error:', error);
+      });
+
+    // Event listeners for stopping and ending
+    this.audio.onpause = () => {
+      assistantMessage.isPlaying = false;
+      this.updateMessageState(assistantMessage);
+    };
+
+    this.audio.onended = () => {
+      assistantMessage.isPlaying = false;
+      this.updateMessageState(assistantMessage);
+    };
   }
 
+  private updateMessageState(updatedMessage: any) {
+    const currentMessages = this.messagesSubject.getValue();
+    const index = currentMessages.findIndex(msg => msg.content === updatedMessage.content);
+
+    if (index > -1) {
+      currentMessages[index] = updatedMessage;
+      this.messagesSubject.next([...currentMessages]);
+    }
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.cdRef.detectChanges(); // <-- Manually trigger change detection
+      setTimeout(() => {
+        if (this.messageContainer) {
+          this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+        }
+      }, 100); // <-- Slight delay to wait for rendering
+    } catch (err) {
+      console.error('Scroll error:', err);
+    }
+  }
+
+
+  toggleAudio(message: any) {
+    if (message.isPlaying) {
+      this.audio.pause();
+    } else {
+      this.playAudio(message);
+    }
+  }
 }
